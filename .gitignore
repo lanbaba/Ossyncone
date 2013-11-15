@@ -1,0 +1,8 @@
+.DS_Store
+*.pyc
+doc/
+config/
+downloads/
+uploads/
+backup/
+logs/
