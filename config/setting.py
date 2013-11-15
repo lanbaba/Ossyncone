@@ -6,8 +6,8 @@
 ####################
 
 HOST = "oss.aliyuncs.com"
-ACCESS_ID = “myid”
-SECRET_ACCESS_KEY = “mykey”
+ACCESS_ID = "myid"
+SECRET_ACCESS_KEY = "mykey"
 
 # OSS Bucket和本地目录同步映射关系，一个Bucket对应一个或多个本地目录(local_folder)。
 # 可以定义多个bucket。示例：
