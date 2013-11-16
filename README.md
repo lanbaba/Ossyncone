@@ -29,9 +29,9 @@ Ossync是一款开源的、基于inotify机制的阿里云同步上载工具，�
 ## 定时运行
  * 建立脚本文件内容：
 
- #!/bin/sh
- cd ~/ossyncone/ossync.py
- nohup python ossync.py >/dev/null 2>&1 &
+ 		#!/bin/sh
+ 		cd ~/ossyncone/ossync.py
+ 		nohup python ossync.py >/dev/null 2>&1 &
  
  * 保存为startsync.sh
  * 以凌晨三点启动备份为例， 运行： 
