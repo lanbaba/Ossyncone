@@ -56,11 +56,11 @@ class SyncThread(threading.Thread):
 			if (res.status / 100) == 2:
 				success = True
 		else:
-            file_size = os.path.getsize(filename)
-            if file_size > 2000000:
-                res = self.oss.upload_large_file(bucket = bucket, object = oss_obj_name, filename = filename)
-            else:
-                res = self.oss.put_object_from_file(bucket = bucket, object = oss_obj_name, filename = filename)
+			file_size = os.path.getsize(filename)
+			if file_size > 2000000:
+				res = self.oss.upload_large_file(bucket = bucket, object = oss_obj_name, filename = filename)
+			else:
+				res = self.oss.put_object_from_file(bucket = bucket, object = oss_obj_name, filename = filename)
 			filehash = helper.calc_file_md5(filename) 
 			header_map = convert_header2map(res.getheaders())
 			etag = safe_get_element("etag", header_map).upper().replace('"', '')
