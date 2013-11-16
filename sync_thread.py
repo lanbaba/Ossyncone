@@ -30,6 +30,8 @@ from ossync.sdk.oss_api import *
 from ossync.sdk.oss_xml_handler import *
 from config.setting import *
 
+LARGE_FILE_SIZE = 2000000 # File larege than 2M will be depart small parts
+
 class SyncThread(threading.Thread):
 	def __init__(self, oss, queue, *args, **kwargs):
 		threading.Thread.__init__(self, *args, **kwargs)
@@ -39,6 +41,7 @@ class SyncThread(threading.Thread):
 		self.logger =  logging.getLogger('app')
 		dbpath =  'db/ossync.db'
 		self.qm = queue_model.QueueModel(dbpath)
+        
 		
 	def terminate(self):
 		self._terminate = True
@@ -53,7 +56,11 @@ class SyncThread(threading.Thread):
 			if (res.status / 100) == 2:
 				success = True
 		else:
-			res = self.oss.put_object_from_file(bucket = bucket, object = oss_obj_name, filename = filename)
+            file_size =  os.path.getsize(filename)
+            if file_size > 2000000:
+                res = self.oss.upload_large_file(bucket = bucket, object = oss_obj_name, filename = filename)
+            else:
+                res = self.oss.put_object_from_file(bucket = bucket, object = oss_obj_name, filename = filename)
 			filehash = helper.calc_file_md5(filename) 
 			header_map = convert_header2map(res.getheaders())
 			etag = safe_get_element("etag", header_map).upper().replace('"', '')
