@@ -56,7 +56,7 @@ class SyncThread(threading.Thread):
 			if (res.status / 100) == 2:
 				success = True
 		else:
-            file_size =  os.path.getsize(filename)
+            file_size = os.path.getsize(filename)
             if file_size > 2000000:
                 res = self.oss.upload_large_file(bucket = bucket, object = oss_obj_name, filename = filename)
             else:
