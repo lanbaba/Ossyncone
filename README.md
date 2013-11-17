@@ -30,7 +30,7 @@ Ossync是一款开源的、基于inotify机制的阿里云同步上载工具，�
  * 建立脚本文件内容：
 
  		#!/bin/sh
- 		cd ~/ossyncone/ossync.py
+ 		cd /root/ossyncone/ossync.py
  		nohup python ossync.py >/dev/null 2>&1 &
  
  * 保存为startsync.sh
@@ -38,7 +38,7 @@ Ossync是一款开源的、基于inotify机制的阿里云同步上载工具，�
  
  		crontab -e
 		
-	将这行添加到crontab： 0 3 * * *  source ~/startsync.sh，保存退出。
+	将这行添加到crontab： 0 3 * * *  source /root/startsync.sh，保存退出。
   		
 **注：请查看logs目录下的日志文件以了解系统运行状况。**
 
