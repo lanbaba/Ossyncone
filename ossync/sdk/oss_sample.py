@@ -1,22 +1,28 @@
+#!/usr/bin/env python
 #coding=utf8
 import time
-from oss_xml_handler import *
-from oss_api import *
-
-HOST="storage.aliyun.com"
+try:
+    from oss.oss_api import *
+except:
+    from oss_api import *
+try:
+    from oss.oss_xml_handler import *
+except:
+    from oss_xml_handler import *
+HOST = "oss.aliyuncs.com"
 ACCESS_ID = ""
 SECRET_ACCESS_KEY = ""
-#ACCESS_ID and SECRET_ACCESS_KEY should not be empty, please input correct one.
+#ACCESS_ID and SECRET_ACCESS_KEY 默认是空，请填入您申请的正确的ID和KEY.
    
 if __name__ == "__main__": 
-    #init oss,  get instance of oss
+    #初始化
     if len(ACCESS_ID) == 0 or len(SECRET_ACCESS_KEY) == 0:
         print "Please make sure ACCESS_ID and SECRET_ACCESS_KEY are correct in ", __file__ , ", init are empty!"
         exit(0) 
     oss = OssAPI(HOST, ACCESS_ID, SECRET_ACCESS_KEY)
     sep = "=============================="
    
-    #sign_url_auth_with_expire_time(self, method, url, headers = {}, resource="/", timeout = 60):
+    #对特定的URL签名，默认URL过期时间为60秒
     method = "GET"
     bucket = "test" + time.strftime("%Y-%b-%d%H-%M-%S").lower()
     object = "test_object" 
@@ -28,7 +34,7 @@ if __name__ == "__main__":
     url_with_auth = oss.sign_url_auth_with_expire_time(method, url, headers, resource, timeout)
     print "after signature url is: ", url_with_auth
     print sep
-    #put_bucket(self, bucket, acl='', headers = {}):
+    #创建属于自己的bucket
     acl = 'private'
     headers = {}
     res = oss.put_bucket(bucket, acl, headers)
@@ -38,7 +44,7 @@ if __name__ == "__main__":
         print "put bucket ", bucket, "ERROR"
     print sep
 
-    #get_service(self):
+    #列出创建的bucket
     res = oss.get_service()
     if (res.status / 100) == 2:
         body = res.read()
@@ -51,7 +57,7 @@ if __name__ == "__main__":
         print res.status
     print sep
 
-    #put_object_from_string(self, bucket, object, input_content, content_type=DefaultContentType, headers = {}):
+    #把指定的字符串内容上传到bucket中,在bucket中的文件名叫object。
     object = "object_test"
     input_content = "hello, OSS"
     content_type = "text/HTML"
@@ -63,7 +69,7 @@ if __name__ == "__main__":
         print "put_object_from_string ERROR"
     print sep
     
-    #put_object_from_file(self, bucket, object, filename, content_type=DefaultContentType, headers = {}):
+    #指定文件名, 把这个文件上传到bucket中,在bucket中的文件名叫object。
     object = "object_test"
     filename = __file__ 
     content_type = "text/HTML"
@@ -75,7 +81,7 @@ if __name__ == "__main__":
         print "put_object_from_file ERROR"
     print sep
  
-    #put_object_from_fp(self, bucket, object, fp, content_type=DefaultContentType, headers = {}):
+    #指定文件名, 把这个文件上传到bucket中,在bucket中的文件名叫object。
     object = "object_test"
     filename = __file__
     content_type = "text/HTML"
@@ -90,7 +96,7 @@ if __name__ == "__main__":
         print "put_object_from_fp ERROR"
     print sep
 
-    #get_object(self, bucket, object, headers = {}):
+    #下载bucket中的object，内容在body中
     object = "object_test"
     headers = {}
 
@@ -101,7 +107,7 @@ if __name__ == "__main__":
         print "get_object ERROR"
     print sep
 
-    #get_object_to_file(self, bucket, object, filename, headers = {}):
+    #下载bucket中的object，把内容写入到本地文件中
     object = "object_test"
     headers = {}
     filename = "get_object_test_file"
@@ -113,7 +119,7 @@ if __name__ == "__main__":
         print "get_object_to_file ERROR"
     print sep
 
-    #head_object(self, bucket, object, headers = {}):
+    #查看object的meta 信息，例如长度，类型等
     object = "object_test"
     headers = {}
     res = oss.head_object(bucket, object, headers)
@@ -129,7 +135,7 @@ if __name__ == "__main__":
         print "head_object ERROR"
     print sep
     
-    #get_bucket_acl(self, bucket):
+    #查看bucket中所拥有的权限
     res = oss.get_bucket_acl(bucket)
     if (res.status / 100) == 2:
         body = res.read()
@@ -139,7 +145,7 @@ if __name__ == "__main__":
         print "get bucket acl ERROR"
     print sep
 
-    #get_bucket(self, bucket, prefix='', marker='', delimiter='', maxkeys='', headers = {}):
+    #列出bucket中所拥有的object
     prefix = ""
     marker = ""
     delimiter = "/"
@@ -158,7 +164,7 @@ if __name__ == "__main__":
             print i
     print sep
  
-    #upload_large_file(self, bucket, object, filename, thread_num = 10, max_part_num = 1000):
+    #以object group的形式上传大文件，object group的相关概念参考官方API文档
     res = oss.upload_large_file(bucket, object, __file__)    
     if (res.status / 100) == 2:
         print "upload_large_file OK"
@@ -167,7 +173,7 @@ if __name__ == "__main__":
 
     print sep
 
-    #get_object_group_index(self, bucket, object, headers = {})
+    #得到object group中所拥有的object
     res = oss.get_object_group_index(bucket, object)
     if (res.status / 100) == 2:
         print "get_object_group_index OK"
@@ -192,8 +198,48 @@ if __name__ == "__main__":
                 else:
                     print "delete part ", part_name, " in bucket:", bucket, " ok"
     print sep
+    #multi part upload相关操作
+    #get a upload id
+    upload_id = ""
+    res = oss.init_multi_upload(bucket, object, headers)
+    if res.status == 200:
+        body = res.read()
+        h = GetInitUploadIdXml(body)
+        upload_id = h.upload_id
 
-    #delete_object(self, bucket, object, headers = {}):
+    if len(upload_id) == 0:
+        print "init upload failed!"
+    else:
+        print "init upload OK!"
+        print "upload id is: %s" % upload_id
+
+    #upload a part
+    data = "this is test content string."
+    part_number = "1" 
+    res = oss.upload_part_from_string(bucket, object, data, upload_id, part_number)
+    if (res.status / 100) == 2:
+        print "upload part OK"
+    else:
+        print "upload part ERROR"
+
+    #complete upload
+    part_msg_xml = get_part_xml(oss, bucket, object, upload_id)
+    res = oss.complete_upload(bucket, object, upload_id, part_msg_xml)
+    if (res.status / 100) == 2:
+        print "complete upload OK"
+    else:
+        print "complete upload ERROR"
+
+    res = oss.get_object(bucket, object)
+    if (res.status / 100) == 2 and res.read() == data:
+        print "verify upload OK"
+    else:
+        print "verify upload ERROR"
+     
+    print sep
+
+    
+    #删除bucket中的object
     object = "object_test"
     headers = {}
     res = oss.delete_object(bucket, object, headers)
@@ -203,7 +249,7 @@ if __name__ == "__main__":
         print "delete_object ERROR"
     print sep
 
-    #delete_bucket(self, bucket):
+    #删除bucket
     res = oss.delete_bucket(bucket)
     if (res.status / 100) == 2:
         print "delete bucket ", bucket, "OK"

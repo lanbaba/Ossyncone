@@ -1,4 +1,5 @@
-#coding=utf8
+#!/usr/bin/env python
+#coding=utf-8
 from xml.dom import minidom
 
 def get_tag_text(element, tag):
@@ -11,6 +12,10 @@ def get_tag_text(element, tag):
     for node in node.childNodes:
         if node.nodeType in ( node.TEXT_NODE, node.CDATA_SECTION_NODE):
             rc = rc + node.data
+    if rc == "true":
+        return True
+    elif rc == "false":
+        return False
     return rc
 
 class ErrorXml:
@@ -37,11 +42,12 @@ class Owner:
 class Bucket:
     def __init__(self, xml_element):
         self.element = xml_element
+        self.location = get_tag_text(self.element, "Location")
         self.name = get_tag_text(self.element, "Name")
         self.creation_date = get_tag_text(self.element, "CreationDate")
     
     def show(self):
-        print "Name: %s\nCreationDate: %s" % (self.name, self.creation_date)
+        print "Name: %s\nCreationDate: %s\nLocation: %s" % (self.name, self.creation_date, self.location)
 
 class GetServiceXml:
     def __init__(self, xml_string):
@@ -63,7 +69,7 @@ class GetServiceXml:
     def list(self):
         bl = []
         for b in self.bucket_list:
-            bl.append((b.name, b.creation_date))
+            bl.append((b.name, b.creation_date, b.location))
         return bl
     
 class Content:
@@ -179,33 +185,147 @@ class GetBucketAclXml:
 
     def show(self):
         print "Owner Name: %s\nOwner ID: %s\nGrant: %s" % (self.owner.id, self.owner.display_name, self.grant)
+ 
+class GetBucketLocationXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.location = get_tag_text(self.xml, 'LocationConstraint')
+    
+    def show(self):
+        print "LocationConstraint: %s" % (self.location)
+
+class GetInitUploadIdXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.bucket = get_tag_text(self.xml, 'Bucket')
+        self.object = get_tag_text(self.xml, 'Key')
+        self.key = get_tag_text(self.xml, 'Key')
+        self.upload_id = get_tag_text(self.xml, 'UploadId')
+        self.marker = get_tag_text(self.xml, 'Marker')
        
-def test_get_bucket_xml():
-    body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ListBucketResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Name>sweet-memory</Name><Prefix>IMG</Prefix><Marker>IMG_0</Marker><MaxKeys>1000</MaxKeys><IsTruncated>false</IsTruncated><Contents><Key>IMG_2744.JPG</Key><LastModified>2011-03-04T06:20:37.000Z</LastModified><ETag>&quot;a56047f218618a43a9b1c2dca2d8c592&quot;</ETag><Size>220778</Size><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>IMG_2745.JPG</Key><LastModified>2011-03-04T06:20:39.000Z</LastModified><ETag>&quot;511c0b52911bcd667338103c385741af&quot;</ETag><Size>244612</Size><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>IMG_3344.JPG</Key><LastModified>2011-03-04T06:20:48.000Z</LastModified><ETag>&quot;4ea11d796ecc742b216864dcf5dfd193&quot;</ETag><Size>229211</Size><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>IMG_3387.JPG</Key><LastModified>2011-03-04T06:20:53.000Z</LastModified><ETag>&quot;c32b5568ae4fb0a3421f0daba25ecfd4&quot;</ETag><Size>460062</Size><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>IMG_3420.JPG</Key><LastModified>2011-03-04T06:20:25.000Z</LastModified><ETag>&quot;edf010d2a8a4877ce0362b245fcc963b&quot;</ETag><Size>174973</Size><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents><Contents><Key>中文.case</Key><LastModified>2011-03-04T06:20:26.000Z</LastModified><ETag>&quot;7fd64eec21799ef048ed827cf6098f06&quot;</ETag><Size>208134</Size><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><StorageClass>STANDARD</StorageClass></Contents></ListBucketResult>"
-    h = GetBucketXml(body)
-    h.show()
-    (fl, pl) = h.list()
-    print "\nfile_list: ", fl
-    print "prefix list: ", pl
+    def show(self):
+        print " "     
 
-def test_get_service_xml():
-    body = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><ListAllMyBucketsResult xmlns=\"http://s3.amazonaws.com/doc/2006-03-01/\"><Owner><ID>2cfd76976de6f4c6f4e05fcd02680c4ca619428123681589efcb203f29dce924</ID><DisplayName>sanbo_ustc</DisplayName></Owner><Buckets><Bucket><Name>360buy</Name><CreationDate>2011-03-04T09:25:37.000Z</CreationDate></Bucket><Bucket><Name>aliyun-test-test</Name><CreationDate>2011-04-11T12:24:06.000Z</CreationDate></Bucket><Bucket><Name>irecoffee</Name><CreationDate>2011-03-04T06:14:56.000Z</CreationDate></Bucket><Bucket><Name>sweet-memory</Name><CreationDate>2011-04-12T11:56:04.000Z</CreationDate></Bucket></Buckets></ListAllMyBucketsResult>"
-    h = GetServiceXml(body)
-    h.show()
-    print "\nbucket list: ", h.list()
+class Upload:
+    def __init__(self, xml_element):
+        self.element = xml_element
+        self.key = get_tag_text(self.element, "Key")        
+        self.upload_id = get_tag_text(self.element, "UploadId")
 
-def test_get_bucket_acl_xml():
-    body = '<?xml version="1.0" ?><AccessControlPolicy><Owner><ID>61155b1e39dbca1d0d0f3c7faa32d9e8e9a90a9cd86edbd27d8eed5d0ad8ce82</ID><DisplayName>megjian</DisplayName></Owner><AccessControlList><Grant>public-read-write</Grant></AccessControlList></AccessControlPolicy>'
-    h = GetBucketAclXml(body)
-    h.show()
+class GetMultipartUploadsXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.bucket = get_tag_text(self.xml, 'Bucket')
+        self.key_marker = get_tag_text(self.xml, 'KeyMarker')
+        self.upload_id_marker = get_tag_text(self.xml, 'UploadIdMarker')
+        self.next_key_marker = get_tag_text(self.xml, 'NextKeyMarker')
+        self.next_upload_id_marker = get_tag_text(self.xml, 'NextUploadIdMarker')
+        self.delimiter = get_tag_text(self.xml, 'Delimiter')
+        self.prefix = get_tag_text(self.xml, 'Prefix')
+        self.max_uploads = get_tag_text(self.xml, 'MaxUploads')
+        self.is_truncated = get_tag_text(self.xml, 'IsTruncated')
 
-def test_get_object_group_xml():
-    body = '<?xml version="1.0" encoding="UTF-8"?><FileGroup><Bucket>ut_test_post_object_group</Bucket> <Key>ut_test_post_object_group</Key> <Etag>&quot;91E8503F4DA1324E28434AA6B6E20D15&quot;</Etag><FileLength>1073741824</FileLength> <FilePart><Part> <PartNumber>1</PartNumber> <ObjectName>4d37380c7149508bedf78dc7c5c68f55_test_post_object_group.txt_1</ObjectName><ObjectSize>10485760</ObjectSize><ETag>&quot;A957A9F1EF44ED7D40CD5C738D113509&quot;</ETag></Part><Part><PartNumber>2</PartNumber><ObjectName>7aa26b8da263589e875d179b87642691_test_post_object_group.txt_2</ObjectName><ObjectSize>10485760</ObjectSize><ETag>&quot;A957A9F1EF44ED7D40CD5C738D113509&quot;</ETag></Part><Part><PartNumber>3</PartNumber><ObjectName>28b0c8a9bd69469f76cd102d6e1b0f03_test_post_object_group.txt_3</ObjectName><ObjectSize>10485760</ObjectSize><ETag>&quot;A957A9F1EF44ED7D40CD5C738D113509&quot;</ETag></Part></FilePart></FileGroup>'
-    h = GetObjectGroupIndexXml(body)
-    h.show()
+        self.prefix_list = []
+        prefixes = self.xml.getElementsByTagName('CommonPrefixes')
+        for p in prefixes:
+            tag_txt = get_tag_text(p, "Prefix")
+            self.prefix_list.append(tag_txt)
+
+        self.content_list = []
+        contents = self.xml.getElementsByTagName('Upload')
+        for c in contents:
+            self.content_list.append(Upload(c))
+
+    def list(self):
+        cl = []
+        pl = []
+        for c in self.content_list:
+            cl.append((c.key, c.upload_id))
+        for p in self.prefix_list:
+            pl.append(p)
+
+        return (cl, pl)
+
+class MultiPart:
+    def __init__(self, xml_element):
+        self.element = xml_element
+        self.part_number = get_tag_text(self.element, 'PartNumber')
+        self.last_modified = get_tag_text(self.element, 'LastModified')
+        self.etag = get_tag_text(self.element, 'ETag')
+        self.size = get_tag_text(self.element, 'Size')
+
+class GetPartsXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.bucket = get_tag_text(self.xml, 'Bucket')
+        self.key = get_tag_text(self.xml, 'Key')
+        self.upload_id = get_tag_text(self.xml, 'UploadId')
+        self.storage_class = get_tag_text(self.xml, 'StorageClass')
+        self.next_part_number_marker = get_tag_text(self.xml, 'NextPartNumberMarker')
+        self.max_parts = get_tag_text(self.xml, 'MaxParts')
+        self.is_truncated = get_tag_text(self.xml, 'IsTruncated')
+        self.part_number_marker = get_tag_text(self.xml, 'PartNumberMarker')
+        
+        self.content_list = []
+        contents = self.xml.getElementsByTagName('Part')
+        for c in contents:
+            self.content_list.append(MultiPart(c))
+
+    def list(self):
+        cl = []
+        for c in self.content_list:
+            cl.append((c.part_number, c.etag, c.size, c.last_modified))
+        return cl
+
+class CompleteUploadXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.location = get_tag_text(self.xml, 'Location')
+        self.bucket = get_tag_text(self.xml, 'Bucket')
+        self.key = get_tag_text(self.xml, 'Key')
+        self.etag = get_tag_text(self.xml, "ETag")
+
+class DeletedObjectsXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        contents = self.xml.getElementsByTagName('Deleted')
+        self.content_list = []
+        for c in contents:
+            self.content_list.append(get_tag_text(c, 'Key'))
+    def list(self):
+        cl = []
+        for c in self.content_list:
+            cl.append(c)
+        return cl
+
+class CnameInfoPart:
+    def __init__(self, xml_element):
+        self.element = xml_element
+        self.cname = get_tag_text(self.element, 'Cname')
+        self.bucket = get_tag_text(self.element, 'Bucket')
+        self.status = get_tag_text(self.element, 'Status')
+        self.lastmodifytime = get_tag_text(self.element, 'LastModifyTime')
+
+class CnameToBucketXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.content_list = []
+        contents = self.xml.getElementsByTagName('CnameInfo')
+        for c in contents:
+            self.content_list.append(CnameInfoPart(c))
+
+    def list(self):
+        cl = []
+        for c in self.content_list:
+            cl.append((c.cname, c.bucket, c.status, c.lastmodifytime))
+        return cl
+
+class RedirectXml:
+    def __init__(self, xml_string):
+        self.xml = minidom.parseString(xml_string)
+        self.endpoint = get_tag_text(self.xml, 'Endpoint')
+    def Endpoint(self):
+        return self.endpoint
 
 if __name__ == "__main__":
-    test_get_bucket_xml()
-    test_get_service_xml()
-    test_get_bucket_acl_xml()
-    test_get_object_group_xml()
+    pass
