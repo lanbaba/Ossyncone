@@ -65,10 +65,10 @@ class SyncThread(threading.Thread):
 		else:
 			file_size = os.path.getsize(filename)
 			if file_size > LARGE_FILE_SIZE:
-				is_large_file = False    
+				is_large_file = True    
 				res = self.oss.upload_large_file(bucket = bucket, object = oss_obj_name, filename = filename)
 			else:
-				is_large_file = True
+				is_large_file = False
 				res = self.oss.put_object_from_file(bucket = bucket, object = oss_obj_name, filename = filename)
 			filehash = helper.calc_file_md5(filename) 
 			header_map = convert_header2map(res.getheaders())
