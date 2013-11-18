@@ -80,7 +80,7 @@ class SyncThread(threading.Thread):
                     else:
                         success = False
                 else:
-                    success = False
+                    success = True
 		return success
 		
 	def exists_oss_object(self, bucket, oss_obj_name):
