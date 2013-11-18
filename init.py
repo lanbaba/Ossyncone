@@ -27,7 +27,11 @@ from config.setting import *
 from ossync.lib import queue_model
 import logging
 import logging.handlers
-from ossync.sdk.oss_api import *
+import time
+try:
+    from ossync.sdk.oss_api import *
+except:
+    from ossync.oss_api import *
 
 def set_sys_to_utf8():
 	reload(sys)

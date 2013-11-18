@@ -26,8 +26,15 @@ import hashlib
 from Queue import *
 from ossync.lib import queue_model
 from ossync.lib import helper
-from ossync.sdk.oss_api import *
-from ossync.sdk.oss_xml_handler import *
+import time
+try:
+    from ossync.sdk.oss_api import *
+except:
+    from ossync.oss_api import *
+try:
+    from ossync.sdk.oss_xml_handler import *
+except:
+    from ossync.oss_xml_handler import *
 from config.setting import *
 
 LARGE_FILE_SIZE = 2000000 # File larege than 2M will be depart small parts
