@@ -47,7 +47,7 @@ class SyncThread(threading.Thread):
 		self._terminate = False
 		self.logger =  logging.getLogger('app')
 		if DB_PATH is None:
-		DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "db/ossync.db")
+			DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "db/ossync.db")
 		dbpath =  DB_PATH
 		self.qm = queue_model.QueueModel(dbpath)
         
