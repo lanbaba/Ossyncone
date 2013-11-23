@@ -38,9 +38,7 @@ def set_sys_to_utf8():
 	sys.setdefaultencoding('utf-8')
 
 def get_logger():
-	if LOGFILE_PATH is None:
-		LOGFILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "logs/app.log")
-
+	
 	format = logging.Formatter("%(levelname)-10s %(asctime)s %(message)s")
 	logging.basicConfig(level = logging.INFO) 
 	logger = logging.getLogger('app')
@@ -89,8 +87,6 @@ def check_config(logger):
 			exit(0)
 
 def queue_unprocessed(queue, logger):
-	if DB_PATH is None:
-		DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "db/ossync.db")
 	dbpath =  DB_PATH
 	qm = queue_model.QueueModel(dbpath)
 	qm.open()
