@@ -42,6 +42,7 @@ oss_mappers = [{'bucket': 'dzdata', 'local_folders': ['/root/testdata/audios', '
 ####################
 # LOGGING SETTING  #
 ####################
+LOGFILE_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "logs/app.log")
 MAX_LOGFILE_SIZE = 104857600 # 默认日志文件大小为100M，每次达大小限制时，会自动加后缀生成备份文件
 MAX_BACKUP_COUNT = 5 # 默认备份文件为5个
 
@@ -56,3 +57,9 @@ MAX_RETRIES = 10
 # MAX_RETRIES      #
 ####################
 NTHREADS = 5
+
+# 数据库路径
+####################
+# DB PATH          #
+####################
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../", "db/ossync.db")

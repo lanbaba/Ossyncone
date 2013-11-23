@@ -46,7 +46,7 @@ class SyncThread(threading.Thread):
 		self.oss = oss
 		self._terminate = False
 		self.logger =  logging.getLogger('app')
-		dbpath =  'db/ossync.db'
+		dbpath =  DB_PATH
 		self.qm = queue_model.QueueModel(dbpath)
         
 		

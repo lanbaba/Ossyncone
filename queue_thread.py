@@ -26,6 +26,7 @@ from Queue import *
 import hashlib
 from ossync.lib import helper
 from ossync.lib import queue_model
+from config.setting import *
 
 class QueueThread(threading.Thread):
 	
@@ -39,7 +40,7 @@ class QueueThread(threading.Thread):
 		self.queue = queue
 		self._terminate = False
 		self.logger =  logging.getLogger('app')
-		dbpath =  'db/ossync.db'
+		dbpath =  DB_PATH
 		self.qm = queue_model.QueueModel(dbpath) 
 		
 	def terminate(self):

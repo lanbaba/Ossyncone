@@ -38,11 +38,11 @@ def set_sys_to_utf8():
 	sys.setdefaultencoding('utf-8')
 
 def get_logger():
-	LOG_FILENAME = 'logs/app.log'
+	
 	format = logging.Formatter("%(levelname)-10s %(asctime)s %(message)s")
 	logging.basicConfig(level = logging.INFO) 
 	logger = logging.getLogger('app')
-	handler1 = logging.handlers.RotatingFileHandler(LOG_FILENAME, maxBytes = MAX_LOGFILE_SIZE, backupCount = MAX_BACKUP_COUNT)
+	handler1 = logging.handlers.RotatingFileHandler(LOGFILE_PATH , maxBytes = MAX_LOGFILE_SIZE, backupCount = MAX_BACKUP_COUNT)
 	handler2 = logging.StreamHandler(sys.stdout)
 	handler1.setFormatter(format)
 	handler2.setFormatter(format)
@@ -87,7 +87,7 @@ def check_config(logger):
 			exit(0)
 
 def queue_unprocessed(queue, logger):
-	dbpath =  'db/ossync.db'
+	dbpath =  DB_PATH
 	qm = queue_model.QueueModel(dbpath)
 	qm.open()
 	items = qm.find_all(status = 0)
