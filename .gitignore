@@ -2,6 +2,8 @@
 *.pyc
 doc/
 db/
+*.db
+*.log
 config/
 downloads/
 uploads/
