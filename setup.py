@@ -32,30 +32,30 @@ if sys.version_info >= (3, 0):
 	sys.exit(0)
 
 # check if linux kernel supports inotify
-if not os.path.exists("/proc/sys/fs/inotify"):
-	sys.stderr.write("Sorry, your linux kernel doesn't support inotify。\n")
-	sys.exit(0)
+#if not os.path.exists("/proc/sys/fs/inotify"):
+#	sys.stderr.write("Sorry, your linux kernel doesn't support inotify。\n")
+#	sys.exit(0)
 
-print "Start to install necessary modules ..."
+#print "Start to install necessary modules ..."
 # check if pip has been installed
-excode = os.system("pip --version")
-if excode > 0:
+#excode = os.system("pip --version")
+#if excode > 0:
 	# try to install pip
-	os.system("sudo curl http://python-distribute.org/distribute_setup.py | python")
-	os.system("curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python")
+#	os.system("sudo curl http://python-distribute.org/distribute_setup.py | python")
+#	os.system("curl https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python")
 	# clean temp files
-	os.system("rm -f distribute*.tar.gz")
+#	os.system("rm -f distribute*.tar.gz")
 
 # try to install pyinotify
-os.system("sudo pip install pyinotify")
+#os.system("sudo pip install pyinotify")
 
 # check if pyinotify has been installed
-try:
-	import pyinotify
-	print "Installation complete successfully!" 
-except ImportError as e:
-	sys.stderr.write("Sorry, Installation pyinotify module failure! Please try to install it manually。\n")
-	sys.exit(0)
+#try:
+#	import pyinotify
+print "Installation complete successfully!" 
+#except ImportError as e:
+#	sys.stderr.write("Sorry, Installation pyinotify module failure! Please try to install it manually。\n")
+#	sys.exit(0)
 
 
 	

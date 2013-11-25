@@ -37,7 +37,7 @@ except:
     from ossync.oss_xml_handler import *
 from config.setting import *
 
-LARGE_FILE_SIZE = 5000000 # File larege than 2M will be depart small parts
+LARGE_FILE_SIZE = 10000000 # File larege than 2M will be depart small parts
 
 class SyncThread(threading.Thread):
 	def __init__(self, oss, queue, *args, **kwargs):
