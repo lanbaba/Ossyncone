@@ -25,7 +25,7 @@ from Queue import *
 from ossync.sdk.oss_api import *
 from queue_thread import QueueThread
 from sync_thread import SyncThread
-from inotify_thread import InotifyThread
+# from inotify_thread import InotifyThread
 from init import *
 
 if __name__ == '__main__':

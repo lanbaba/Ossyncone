@@ -158,12 +158,23 @@ class SyncThread(threading.Thread):
 				if not self.is_el_processed(hashcode):
 					oss_obj_name = os.path.join(os.path.basename(root), relpath)
 					if len(oss_obj_name) > 0:
+						success = False
+						msg = ""
 						if(action == 'M' or action == 'C'): 
-							success = self.upload(bucket, oss_obj_name, os.path.join(root, relpath)) 
-							msg = 'put object ' + oss_obj_name + ' to bucket ' + bucket
+							try:
+								success = self.upload(bucket, oss_obj_name, os.path.join(root, relpath)) 
+								msg = 'put object ' + oss_obj_name + ' to bucket ' + bucket
+							except Exception as e1:
+								self.logger.critical(e1.message)
+								pass
+							
 						if(action == 'D'): 
-							success = self.delete_oss_objects(bucket, oss_obj_name)
-							msg = 'delete object '  + oss_obj_name + ' of bucket ' + bucket
+							try:
+								success = self.delete_oss_objects(bucket, oss_obj_name)
+								msg = 'delete object '  + oss_obj_name + ' of bucket ' + bucket
+							except Exception as e2:
+								self.logger.critical(e2.message)
+								pass
 						if success: 
 							msg += ' success'
 							self.logger.info(msg)

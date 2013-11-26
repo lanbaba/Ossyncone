@@ -60,13 +60,17 @@ def check_config(logger):
 		msg = "please set OSS Mappers"
 		#print msg
 		logger.critical(msg)
-		exit(0)
-	oss = OssAPI(HOST, ACCESS_ID, SECRET_ACCESS_KEY)
+		exit(0) 
+	oss = OssAPI(HOST, ACCESS_ID, SECRET_ACCESS_KEY) 
 	for oss_mapper in oss_mappers:
 		bucket = oss_mapper['bucket']
 		acl = ''
 		headers = {}
-		res = oss.create_bucket(bucket, acl, headers) 
+		try:
+			res = oss.create_bucket(bucket, acl, headers) 
+		except Exception as e:
+			logger.critical(e.message)
+			exit(0)
 		if (res.status / 100) != 2:
 			msg = "Bucket: " + bucket + " is not existed or create bucket failure, please rename your bucket."
 			#print msg
@@ -89,13 +93,19 @@ def check_config(logger):
 def queue_unprocessed(queue, logger):
 	dbpath =  DB_PATH
 	qm = queue_model.QueueModel(dbpath)
-	qm.open()
-	items = qm.find_all(status = 0)
-	if items:
-		for item in items:
-			if int(item['retries']) < MAX_RETRIES:
-				el = item['bucket'] + '::' + item['root'] + '::' + item['relpath'] +  '::' + item['action']
-				queue.put(el, block = True, timeout = 1)
-				msg = 'queue unprocessed element:' + el 
-				logger.info(msg)
-	qm.close()
+	try:
+		qm.open()
+		items = qm.find_all(status = 0)
+		if items:
+			for item in items:
+				if int(item['retries']) < MAX_RETRIES:
+					el = item['bucket'] + '::' + item['root'] + '::' + item['relpath'] +  '::' + item['action']
+					queue.put(el, block = True, timeout = 1)
+					msg = 'queue unprocessed element:' + el 
+					logger.info(msg)
+		qm.close()
+	except Exception as e:
+		logger.critical(e.message)
+		pass
+
+	
