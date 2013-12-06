@@ -62,9 +62,12 @@ class QueueThread(threading.Thread):
 		"""根据bucket和root以及路径生成队列元素"""
 		relpath = os.path.relpath(path, root) # 相对于root的相对路径 
 		el = bucket + '::' + root + '::' + relpath + '::C'
-		hashcode = helper.calc_el_md5(root, relpath, bucket)
+		filehash = ""
+		if os.path.isfile(path):
+			filehash = helper.calc_file_md5(path)
+		hashcode = helper.calc_el_md5(root, relpath, bucket, filehash)
 		if not self.is_el_queued(hashcode): 
-			data={"root": root, "relpath": relpath, "bucket": bucket, "action": 'C', "status":  0, "retries" : 0}
+			data={"root": root, "relpath": relpath, "bucket": bucket, "action": 'C', "status":  0, "hashcode": hashcode, "retries" : 0}
 			self.qm.save(data)
 			try:
 				self.queue.put(el, block = True, timeout = 1)

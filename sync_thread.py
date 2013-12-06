@@ -154,7 +154,11 @@ class SyncThread(threading.Thread):
 				break 
 			(bucket, root, relpath, action) = item.split('::')
 			if len(bucket) > 0 and len(root) > 0 and len(relpath) > 0 and len(action) > 0:
-				hashcode = helper.calc_el_md5(root, relpath, bucket)
+				filehash = ""
+				filepath = os.path.join(root, relpath)
+				if os.path.isfile(filepath):
+					filehash = helper.calc_file_md5(filepath)
+				hashcode = helper.calc_el_md5(root, relpath, bucket, filehash)
 				if not self.is_el_processed(hashcode):
 					oss_obj_name = os.path.join(os.path.basename(root), relpath)
 					if len(oss_obj_name) > 0:

@@ -51,10 +51,10 @@ def calc_file_md5(filepath):
 		hashstr = md5obj.hexdigest()
 		return hashstr	
 		
-def calc_el_md5(root, relpath, bucket):
+def calc_el_md5(root, relpath, bucket, filehash):
 	"""calc queue element's hashcode """
 	m = hashlib.md5()
-	m.update(root + relpath + bucket)
+	m.update(root + relpath + bucket + filehash)
 	hashcode = m.hexdigest()
 	return hashcode
 		

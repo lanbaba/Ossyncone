@@ -37,13 +37,13 @@ class QueueModel(object):
 		self.cursor.close()
 		self.conn.close() 
 	
-	def save(self, data={"root": '', "relpath": '', "bucket": '', "action": '', "status":  0, "retries": 0}):
+	def save(self, data={"root": '', "relpath": '', "bucket": '', "action": '', "status":  0, "hashcode": '', "retries": 0}):
 		if(len(data) == 0):
 			return False
-		m = hashlib.md5()
-		m.update(data['root'] + data['relpath'] + data['bucket'])
-		hashcode = m.hexdigest()
-		self.cursor.execute('insert into queue values(?, ?, ?, ?, ?, ?, ?)', (data['root'], data['relpath'], data['bucket'], data['action'], data['status'], hashcode, data['retries']))
+		#m = hashlib.md5()
+		#m.update(data['root'] + data['relpath'] + data['bucket'])
+		#hashcode = m.hexdigest()
+		self.cursor.execute('insert into queue values(?, ?, ?, ?, ?, ?, ?)', (data['root'], data['relpath'], data['bucket'], data['action'], data['status'], data['hashcode'], data['retries']))
 		self.conn.commit()
 		
 	def get(self, hashcode):
