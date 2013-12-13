@@ -151,6 +151,7 @@ class SyncThread(threading.Thread):
 				break
 			item = self.queue.get()
 			if item is None:
+				self.logger.info("Sync thread got None and quit!")
 				break 
 			(bucket, root, relpath, action) = item.split('::')
 			if len(bucket) > 0 and len(root) > 0 and len(relpath) > 0 and len(action) > 0:
@@ -182,7 +183,10 @@ class SyncThread(threading.Thread):
 						if success: 
 							msg += ' success'
 							self.logger.info(msg)
-							self.qm.update_status(hashcode, 1)
+							try:
+								self.qm.update_status(hashcode, 1)
+							except Exception as e3:
+								self.logger.critical(e3.message)
 						else:
 							if success == False:
 								msg += ' failure'  
@@ -193,7 +197,10 @@ class SyncThread(threading.Thread):
 									retries = int(row['retries'] )
 									if retries < MAX_RETRIES:
 										self.queue_el(item)
-										self.qm.update_retries(hashcode, retries + 1)
+										try:
+											self.qm.update_retries(hashcode, retries + 1)
+										except Exception as e4:
+											self.logger.critical(e4.message)
 									else:
 										self.logger.critical(msg + ' exceed max retries')
 							else:

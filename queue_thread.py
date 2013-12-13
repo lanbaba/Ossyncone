@@ -68,8 +68,9 @@ class QueueThread(threading.Thread):
 		hashcode = helper.calc_el_md5(root, relpath, bucket, filehash)
 		if not self.is_el_queued(hashcode): 
 			data={"root": root, "relpath": relpath, "bucket": bucket, "action": 'C', "status":  0, "hashcode": hashcode, "retries" : 0}
-			self.qm.save(data)
+
 			try:
+				self.qm.save(data)
 				self.queue.put(el, block = True, timeout = 1)
 				msg = 'queue element:' + el
 				#print msg
