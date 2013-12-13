@@ -140,6 +140,7 @@ class SyncThread(threading.Thread):
 	def is_el_processed(self, hashcode):
 		row = self.qm.get(hashcode)
 		if row and str(row['status']) == '1':
+			self.qm.update_status(hashcode, 1)
 			return True
 		return False
 		
@@ -153,13 +154,9 @@ class SyncThread(threading.Thread):
 			if item is None:
 				self.logger.info("Sync thread got None and quit!")
 				break 
-			(bucket, root, relpath, action) = item.split('::')
+			(bucket, root, relpath, action, hashcode) = item.split('::')
 			if len(bucket) > 0 and len(root) > 0 and len(relpath) > 0 and len(action) > 0:
-				filehash = ""
-				filepath = os.path.join(root, relpath)
-				if os.path.isfile(filepath):
-					filehash = helper.calc_file_md5(filepath)
-				hashcode = helper.calc_el_md5(root, relpath, bucket, filehash)
+				
 				if not self.is_el_processed(hashcode):
 					oss_obj_name = os.path.join(os.path.basename(root), relpath)
 					if len(oss_obj_name) > 0:
