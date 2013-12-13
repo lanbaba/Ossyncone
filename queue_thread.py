@@ -81,10 +81,14 @@ class QueueThread(threading.Thread):
 	
 		
 	def is_el_queued(self, hashcode):
-		row = self.qm.get(hashcode)
-		if row:
-			return True
-		return False
+		try:
+			row = self.qm.get(hashcode) 
+			if row:
+				return True
+			return False
+		except Exception as e:
+			self.logger.error(e.message)
+			return False
 	
 	def run(self):
 		if self.oss_mappers == None or len(self.oss_mappers) == 0:

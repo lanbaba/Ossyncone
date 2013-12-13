@@ -98,8 +98,9 @@ def queue_unprocessed(queue, logger):
 		items = qm.find_all(status = 0)
 		if items:
 			for item in items:
+				logger.info(item)
 				if int(item['retries']) < MAX_RETRIES:
-					el = item['bucket'] + '::' + item['root'] + '::' + item['relpath'] +  '::' + item['action']
+					el = item['bucket'] + '::' + item['root'] + '::' + item['relpath'] +  '::' + item['action'] + '::' + item['hashcode']
 					queue.put(el, block = True, timeout = 1)
 					msg = 'queue unprocessed element:' + el 
 					logger.info(msg)
